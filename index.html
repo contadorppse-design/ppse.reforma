@@ -1,566 +1,589 @@
+mkdir -p ppse-comparador && cd ppse-comparador && cat << 'EOF' > index.html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PPSE Contábil - Comparador Tributário Oficial</title>
+    <title>PPSE Contábil - Comparador Tributário Oficial & Reforma Tributária</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ppse: {
+                            orange: '#DA3E1B',
+                            hover: '#c23315',
+                            dark: '#3D3D3C',
+                            gray: '#595959',
+                            light: '#F8F9FA',
+                            border: '#E2E8F0'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        :root {
-            --ppse-orange: #DA3E1B;
-            --ppse-orange-hover: #c23315;
-            --ppse-dark-gray: #3D3D3C;
-            --ppse-medium-gray: #595959;
-            --ppse-light-bg: #F8F9FA;
-            --card-white: #FFFFFF;
-            --border-color: #E2E8F0;
-            --text-dark: #222222;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
-        body { background-color: var(--ppse-light-bg); color: var(--text-dark); padding: 20px 15px; line-height: 1.4; min-height: 100vh; position: relative; }
-        .container { max-width: 1250px; margin: 0 auto; padding-bottom: 70px; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        * { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
         
-        header {
-            background-color: var(--card-white);
-            border-top: 4px solid var(--ppse-orange);
-            color: var(--ppse-dark-gray); padding: 15px 25px; border-radius: 8px;
-            display: flex; align-items: center; justify-content: space-between;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.04); margin-bottom: 20px; border-bottom: 1px solid var(--border-color);
-        }
-        .header-logo img { height: 48px; width: auto; display: block; }
-        .header-title { text-align: right; }
-        .header-title h1 { font-size: 1.5rem; color: var(--ppse-dark-gray); font-weight: 700; }
-        .header-title p { color: var(--ppse-medium-gray); font-size: 0.88rem; }
-
-        .layout-grid { display: grid; grid-template-columns: 380px 1fr; gap: 18px; }
-        @media (max-width: 900px) { .layout-grid { grid-template-columns: 1fr; } }
-
-        .card {
-            background: var(--card-white); border-radius: 8px; padding: 18px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.03); border: 1px solid var(--border-color);
-            margin-bottom: 15px;
-        }
-        .card h2 {
-            font-size: 1.05rem; color: var(--ppse-dark-gray); margin-bottom: 12px;
-            border-bottom: 2px solid var(--ppse-orange); padding-bottom: 5px; font-weight: 700;
-        }
-
-        .cnpj-search-box {
-            background: #FFFDFD;
-            border: 1px solid #FED7D7;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 14px;
-        }
-        .cnpj-row { display: flex; gap: 6px; margin-top: 4px; }
-        .cnpj-input { flex: 1; font-weight: bold; letter-spacing: 0.5px; }
-        .btn-search {
-            background: var(--ppse-orange);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 0 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            font-size: 0.8rem;
-        }
-        .btn-search:hover { background: var(--ppse-orange-hover); }
-        .cnpj-info {
-            margin-top: 8px;
-            font-size: 0.76rem;
-            color: var(--ppse-medium-gray);
-            line-height: 1.3;
-            display: none;
-        }
-        .cnpj-info strong { color: var(--ppse-dark-gray); }
-
-        .form-group { margin-bottom: 10px; }
-        .form-row { display: flex; gap: 8px; }
-        .form-row .form-group { flex: 1; }
-
-        label { display: block; font-weight: 600; font-size: 0.8rem; margin-bottom: 3px; color: var(--ppse-dark-gray); }
-        .label-optional { font-size: 0.72rem; color: var(--ppse-medium-gray); font-weight: normal; }
-        
-        input, select {
-            width: 100%; padding: 7px 10px; border: 1px solid var(--border-color);
-            border-radius: 5px; font-size: 0.85rem; background: #fff; color: var(--text-dark);
-        }
-        input:focus, select:focus { outline: none; border-color: var(--ppse-orange); }
-
-        .btn-calc, .btn-print, .btn-whatsapp {
-            width: 100%; background: var(--ppse-orange); color: white; border: none;
-            padding: 10px; border-radius: 5px; font-weight: bold; font-size: 0.9rem;
-            cursor: pointer; margin-top: 8px; transition: 0.2s; text-transform: uppercase;
-            display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none;
-        }
-        .btn-print { background: var(--ppse-dark-gray); margin-top: 5px; }
-        .btn-whatsapp { background: #25D366; margin-top: 6px; }
-        .btn-whatsapp:hover { background: #20BA5A; }
-        .btn-calc:hover { background: var(--ppse-orange-hover); }
-
-        .fator-r-box {
-            background: #FFF8F5; border-left: 4px solid var(--ppse-orange); padding: 10px 14px;
-            border-radius: 0 6px 6px 0; margin-bottom: 12px; font-size: 0.85rem;
-        }
-        .status-badge {
-            display: inline-block; padding: 3px 10px; border-radius: 12px; font-weight: bold;
-            font-size: 0.78rem; margin-top: 4px;
-        }
-        .badge-anexo3 { background-color: #E6F4EA; color: #1e7e34; }
-        .badge-anexo5 { background-color: #FCE8E6; color: var(--ppse-orange); }
-
-        /* Banner de Economia Anualizada */
-        .banner-economia {
-            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-            color: #FFFFFF;
-            padding: 14px 18px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
-        }
-        .banner-economia-texto h3 { font-size: 1.15rem; font-weight: 800; }
-        .banner-economia-texto p { font-size: 0.78rem; opacity: 0.95; }
-        .banner-economia-badge {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.78rem;
-            font-weight: bold;
-            text-align: right;
-        }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 0.85rem; }
-        th, td { padding: 7px 9px; text-align: left; border-bottom: 1px solid var(--border-color); }
-        th { background: #F1F3F5; color: var(--ppse-dark-gray); font-weight: 700; }
-
-        .text-black { color: #000000 !important; font-weight: normal; }
-        .row-winner { background-color: #FFF0ED !important; font-weight: bold !important; }
-        .row-winner td { color: #DA3E1B !important; font-weight: bold !important; }
-
-        /* Estilos dos Blocos Didáticos de Memória */
-        .memoria-bloco {
-            background: #FFFFFF;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            margin-bottom: 14px;
-            overflow: hidden;
-        }
-        .memoria-bloco-header {
-            background: #F8FAFC;
-            padding: 9px 14px;
-            font-weight: 700;
-            font-size: 0.88rem;
-            color: var(--ppse-dark-gray);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .memoria-subsecao {
-            background: #FDFDFE;
-            padding: 6px 14px;
-            font-size: 0.76rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--ppse-medium-gray);
-            border-bottom: 1px solid var(--border-color);
-            letter-spacing: 0.5px;
-        }
-        .linha-destaque-final {
-            background: #F8FAFC !important;
+        .row-winner {
+            background-color: #FFF0ED !important;
             font-weight: 700 !important;
-            border-top: 2px solid var(--border-color);
         }
-        .linha-destaque-final td:last-child {
-            color: var(--ppse-orange) !important;
-            font-weight: 800 !important;
-            font-size: 0.95rem;
+        .row-winner td {
+            color: #DA3E1B !important;
+            font-weight: 700 !important;
         }
 
-        footer { text-align: center; color: var(--ppse-medium-gray); font-size: 0.8rem; margin-top: 20px; }
-
-        /* Widget Contador Flutuante */
-        .floating-counter {
-            position: fixed;
-            bottom: 16px;
-            right: 16px;
-            z-index: 999;
-            background: var(--ppse-dark-gray);
-            color: #FFFFFF;
-            padding: 10px 16px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.18);
-            border: 1px solid #595959;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: transform 0.2s ease;
-        }
-        .floating-counter:hover { transform: scale(1.04); }
-        .floating-counter-icon {
-            background: rgba(218, 62, 27, 0.2);
-            color: var(--ppse-orange);
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1rem;
-        }
-        .floating-counter-info { display: flex; flex-direction: column; }
-        .floating-counter-title { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.5px; color: #d1d5db; font-weight: 600; }
-        .floating-counter-value { font-size: 1.15rem; font-weight: 800; color: #ffffff; line-height: 1.1; }
-        .floating-counter-sub { font-size: 0.65rem; color: #9ca3af; }
-
+        /* Otimização de Impressão */
         @media print {
-            @page { size: A4 portrait; margin: 6mm; }
-            body { background: #fff !important; padding: 0 !important; font-size: 9.5px !important; }
-            .container { max-width: 100% !important; margin: 0 !important; padding-bottom: 0 !important; }
-            header { padding: 6px 12px !important; margin-bottom: 8px !important; border-top-width: 3px !important; }
-            .header-logo img { height: 32px !important; }
-            .header-title h1 { font-size: 1.1rem !important; }
-            .layout-grid { display: grid !important; grid-template-columns: 280px 1fr !important; gap: 8px !important; }
-            .card { padding: 8px !important; margin-bottom: 6px !important; box-shadow: none !important; border: 1px solid #ccc !important; }
-            .btn-calc, .btn-print, .btn-whatsapp, footer, .floating-counter, .no-print, .cnpj-search-box { display: none !important; }
-            .fator-r-box { padding: 5px 8px !important; margin-bottom: 6px !important; }
-            th, td { padding: 4px 6px !important; font-size: 8.5px !important; }
+            @page {
+                size: A4 portrait;
+                margin: 6mm 8mm;
+            }
+            body {
+                background: #FFFFFF !important;
+                padding: 0 !important;
+                font-size: 7.5px !important;
+                color: #000000 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .container {
+                max-width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .no-print, .floating-counter, button, #btnWhatsApp {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            .print-grid {
+                display: grid !important;
+                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                gap: 6px !important;
+            }
+            .card-section {
+                box-shadow: none !important;
+                border: 1px solid #CBD5E1 !important;
+                padding: 6px 8px !important;
+                margin-bottom: 5px !important;
+                border-radius: 4px !important;
+            }
+            header {
+                padding: 4px 8px !important;
+                margin-bottom: 4px !important;
+            }
+            table th, table td {
+                padding: 2px 4px !important;
+                font-size: 6.8px !important;
+            }
         }
     </style>
 </head>
-<body>
+<body class="bg-[#F8F9FA] text-[#222222] antialiased min-h-screen relative pb-20">
 
-<div class="container">
-    <header>
-        <div class="header-logo">
-            <img src="PPSE_logo_color_OFICIAL.jpg" alt="PPSE Contábil">
+<div class="container max-w-7xl mx-auto px-3 sm:px-6 py-5">
+    
+    <!-- CABEÇALHO EXECUTIVO -->
+    <header class="bg-white border-t-4 border-[#DA3E1B] rounded-xl p-4 sm:p-5 shadow-sm border border-[#E2E8F0] mb-5 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex items-center space-x-3.5">
+            <div class="w-12 h-12 rounded-lg bg-[#DA3E1B] flex items-center justify-center text-white text-xl font-black shadow-md flex-shrink-0">
+                <i class="fa-solid fa-chart-pie"></i>
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-black tracking-wider text-[#DA3E1B] uppercase">PPSE Consultoria Contábil</span>
+                    <span class="bg-orange-100 text-[#DA3E1B] text-[10px] font-bold px-2 py-0.5 rounded-full border border-orange-200">Reforma Tributária IBS/CBS</span>
+                </div>
+                <h1 class="text-lg sm:text-xl font-extrabold text-[#3D3D3C] tracking-tight">Demonstrativo de Planejamento Tributário</h1>
+                <p class="text-xs text-[#595959]">Simulador Comparativo: Simples Puro, Simples Híbrido & Lucro Presumido</p>
+            </div>
         </div>
-        <div class="header-title">
-            <h1>Demonstrativo de Planejamento Tributário</h1>
-            <p>Análise Didática de Regimes: Simples Nacional, Reforma Tributária & Lucro Presumido</p>
+
+        <!-- Ações no Topo -->
+        <div class="flex items-center gap-2.5 no-print w-full md:w-auto justify-end">
+            <button onclick="window.print()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1.5">
+                <i class="fa-solid fa-print text-orange-400"></i> Relatório PDF / Imprimir
+            </button>
+            <a href="#" id="btnWhatsApp" target="_blank" class="px-3.5 py-2 bg-[#25D366] hover:bg-[#20ba5a] text-white rounded-lg text-xs font-bold shadow-sm transition flex items-center gap-1.5">
+                <i class="fa-brands fa-whatsapp text-sm"></i> Falar com Especialista
+            </a>
         </div>
     </header>
 
-    <div class="layout-grid">
-        <!-- FORMULÁRIO DE ENTRADAS -->
-        <div class="card">
-            <h2>Parâmetros do Cliente</h2>
-            
-            <div class="cnpj-search-box no-print">
-                <label><i class="fa-solid fa-magnifying-glass" style="color: var(--ppse-orange);"></i> Importar Dados via CNPJ (Opcional)</label>
-                <div class="cnpj-row">
-                    <input type="text" id="cnpjInput" class="cnpj-input" placeholder="00.000.000/0000-00" maxlength="18">
-                    <button type="button" class="btn-search" id="btnBuscarCnpj" onclick="consultarCNPJ()">Buscar</button>
-                </div>
-                <div id="cnpjInfo" class="cnpj-info">
-                    <span id="razaoSocialTxt"></span><br>
-                    <span id="cnaePrincipalTxt"></span>
-                </div>
+    <!-- QUADRO CADASTRAL (APARECE NA IMPRESSÃO E RESUMO) -->
+    <div id="printCompanyBox" class="bg-white border-l-4 border-[#DA3E1B] border border-[#E2E8F0] rounded-lg p-3 mb-5 shadow-sm text-xs text-[#3D3D3C]">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1.5 border-b border-slate-100 pb-2 mb-2">
+            <div>
+                <span class="text-[10px] uppercase font-bold text-slate-400">Cliente / Razão Social:</span>
+                <strong id="printRazaoSocial" class="text-slate-800 ml-1 text-sm">Preenchimento Manual / Não Vinculado</strong>
             </div>
+            <div>
+                <span class="text-[10px] uppercase font-bold text-slate-400">CNPJ:</span>
+                <span id="printCNPJ" class="font-mono font-bold text-slate-700 ml-1">Não informado</span>
+                <span class="text-slate-300 mx-2">|</span>
+                <span class="text-[10px] uppercase font-bold text-slate-400">Emissão:</span>
+                <span id="printDataEmissao" class="font-medium text-slate-600 ml-1">--/--/----</span>
+            </div>
+        </div>
+        <div class="flex items-center justify-between text-[11px] text-[#595959]">
+            <div>
+                <strong>CNAE Vinculado:</strong> <span id="printCNAE">6920-6/01 - Atividades de Contabilidade</span>
+            </div>
+            <div id="printReducaoBadge" class="bg-emerald-50 text-emerald-800 font-bold px-2 py-0.5 rounded text-[10px] border border-emerald-200">
+                Redução CBS/IBS: 30%
+            </div>
+        </div>
+    </div>
 
-            <div class="form-group">
-                <label>CNAE / Atividade Identificada</label>
-                <select id="cnaeSelect" onchange="alterarCNAESelecionado()">
-                    <option value="6920601" selected>6920-6/01 - Atividades de Contabilidade (Redução 30%)</option>
-                    <option value="8650003">8650-0/03 - Atividades de Psicologia e Psicanálise (Redução 60%)</option>
-                    <option value="8630503">8630-5/03 - Atividade Médica Ambulatorial (Redução 60%)</option>
-                    <option value="6911701">6911-7/01 - Serviços Advocatícios (Redução 30%)</option>
-                    <option value="7112000">7112-0/00 - Serviços de Engenharia (Redução 30%)</option>
-                    <option value="7319002">7319-0/02 - Promoção de Vendas (Redução 0%)</option>
-                    <option value="4711301">4711-3/01 - Comércio Varejista em Geral (Redução 0%)</option>
+    <!-- BLOCO 1 - ENTRADA DE DADOS -->
+    <section class="card-section bg-white rounded-xl shadow-sm border border-[#E2E8F0] p-5 sm:p-6 mb-6">
+        <div class="flex items-center justify-between border-b-2 border-[#DA3E1B] pb-3 mb-5">
+            <h2 class="text-sm sm:text-base font-bold text-[#3D3D3C] flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-[#DA3E1B] text-white flex items-center justify-center text-xs">1</span>
+                Bloco 1: Parâmetros da Empresa & Entradas Operacionais
+            </h2>
+            <span class="text-xs text-[#595959] font-medium hidden sm:inline">Preencha via CNPJ ou ajuste manualmente</span>
+        </div>
+
+        <!-- 1.1 Busca CNPJ -->
+        <div class="bg-orange-50/50 border border-orange-200 rounded-lg p-3.5 mb-5 no-print">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                <div class="flex-1">
+                    <label class="block text-[11px] font-bold uppercase text-orange-900 tracking-wider mb-1">
+                        <i class="fa-solid fa-magnifying-glass text-[#DA3E1B] mr-1"></i> Importar Dados via CNPJ (Receita Federal)
+                    </label>
+                    <input type="text" id="cnpjInput" placeholder="00.000.000/0000-00" maxlength="18"
+                        class="w-full bg-white border border-orange-300 rounded-lg px-3 py-2 text-xs font-bold text-slate-800 tracking-wider focus:outline-none focus:ring-2 focus:ring-[#DA3E1B]">
+                </div>
+                <button type="button" id="btnBuscarCnpj" onclick="consultarCNPJ()" 
+                    class="sm:mt-5 bg-[#DA3E1B] hover:bg-[#c23315] text-white text-xs font-bold px-4 py-2 rounded-lg transition shadow-sm flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-cloud-arrow-down"></i> Buscar CNPJ
+                </button>
+            </div>
+            <div id="cnpjInfoFeedback" class="mt-2 text-xs text-slate-600 hidden">
+                <span id="razaoSocialFeedback" class="font-semibold text-slate-800"></span> • 
+                <span id="cnaePrincipalFeedback" class="text-slate-600"></span>
+            </div>
+        </div>
+
+        <!-- 1.2 Parâmetros Principais -->
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-5">
+            <div class="md:col-span-2">
+                <label class="block text-xs font-semibold text-[#3D3D3C] mb-1">Atividade Econômica (CNAE)</label>
+                <select id="cnaeSelect" onchange="alterarCNAESelecionado()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs font-medium focus:ring-2 focus:ring-[#DA3E1B] focus:outline-none">
+                    <option value="6920601" selected>6920-6/01 - Contabilidade (Anexo III, Redução CBS 30%)</option>
+                    <option value="8650003">8650-0/03 - Psicologia / Saúde (Anexo V c/ Fator R, Redução CBS 60%)</option>
+                    <option value="8630503">8630-5/03 - Medicina Ambulatorial (Anexo V c/ Fator R, Redução CBS 60%)</option>
+                    <option value="6911701">6911-7/01 - Advocacia (Anexo IV, Redução CBS 30%)</option>
+                    <option value="7112000">7112-0/00 - Engenharia / Arquitetura (Anexo V c/ Fator R, Redução CBS 30%)</option>
+                    <option value="7319002">7319-0/02 - Promoção de Vendas (Anexo III, Redução CBS 0%)</option>
+                    <option value="4711301">4711-3/01 - Comércio Varejista (Anexo I, Redução CBS 0%)</option>
                     <option value="manual">-- Outro CNAE / Preenchimento Manual --</option>
                 </select>
             </div>
 
-            <div class="form-group">
-                <label>Anexo Base (Simples Nacional)</label>
-                <select id="anexoSelect" onchange="calcular()">
+            <div>
+                <label class="block text-xs font-semibold text-[#3D3D3C] mb-1">Anexo Base (Simples Nacional)</label>
+                <select id="anexoSelect" onchange="calcular()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs font-medium focus:ring-2 focus:ring-[#DA3E1B]">
                     <option value="I">Anexo I - Comércio</option>
                     <option value="II">Anexo II - Indústria</option>
-                    <option value="III" selected>Anexo III - Serviços (inclusive Contabilidade e Promoção de Vendas)</option>
+                    <option value="III" selected>Anexo III - Serviços</option>
                     <option value="IV">Anexo IV - Advocacia, Construção & Vigilância</option>
-                    <option value="V">Anexo V - Serviços Intelectuais (sujeito ao Fator R)</option>
+                    <option value="V">Anexo V - Intelectuais (Sujeito a Fator R)</option>
                 </select>
             </div>
 
-            <div class="form-group">
-                <label>RBT12 - Receita Acumulada 12 Meses (R$)</label>
-                <input type="number" id="rbt12Input" value="360000" oninput="calcular()">
-            </div>
-
-            <div class="form-group">
-                <label>FS12 - Folha Acumulada 12 Meses (R$)</label>
-                <input type="number" id="fs12Input" value="100800" oninput="calcular()">
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Vendas Mês (R$)</label>
-                    <input type="number" id="fatVendas" value="0" oninput="calcular()">
-                </div>
-                <div class="form-group">
-                    <label>Serviços Mês (R$)</label>
-                    <input type="number" id="fatServicos" value="30000" oninput="calcular()">
+            <div class="bg-slate-50 border border-slate-200 rounded-lg p-2 flex flex-col justify-between">
+                <span class="text-[10px] font-bold uppercase text-slate-500">Status do Fator R (FS12/RBT12)</span>
+                <div class="flex items-center justify-between mt-1">
+                    <span id="fatorRPct" class="text-xs font-extrabold text-[#3D3D3C]">28,00%</span>
+                    <span id="fatorRBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Anexo III</span>
                 </div>
             </div>
-
-            <div class="form-group">
-                <label>Compras c/ NF no Mês (R$)</label>
-                <input type="number" id="comprasNF" value="4500" oninput="calcular()">
-            </div>
-
-            <div class="form-group">
-                <label>Despesas c/ Crédito CBS no Mês (R$)</label>
-                <input type="number" id="despesasCBS" value="2250" oninput="calcular()">
-            </div>
-
-            <!-- TRIBUTOS LOCAIS COM ALÍQUOTA MÉDIA / OPCIONAL -->
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Alíquota Média ISS (%) <span class="label-optional">(Opcional)</span></label>
-                    <input type="number" id="aliqISS" value="5" step="0.1" placeholder="0.0" oninput="calcular()">
-                </div>
-                <div class="form-group">
-                    <label>Redução CBS/IBS (%) <span class="label-optional" id="labelReducaoInfo">(Via CNAE)</span></label>
-                    <input type="number" id="percentualReducao" value="30" step="1" oninput="calcular()">
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>ICMS Médio Saída (%) <span class="label-optional">(Opcional)</span></label>
-                    <input type="number" id="aliqIcmsSaida" value="0" step="0.1" placeholder="0.0" oninput="calcular()">
-                </div>
-                <div class="form-group">
-                    <label>ICMS Médio Entrada (%) <span class="label-optional">(Opcional)</span></label>
-                    <input type="number" id="aliqIcmsEntrada" value="0" step="0.1" placeholder="0.0" oninput="calcular()">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Alíquota CBS (%)</label>
-                <input type="number" id="aliqCBS" value="8" step="0.1" oninput="calcular()">
-            </div>
-
-            <button class="btn-calc" onclick="calcular()">Recalcular Tabela</button>
-            <button class="btn-print" onclick="window.print()">Imprimir Demonstrativo</button>
-            <a href="#" id="btnWhatsApp" target="_blank" class="btn-whatsapp no-print">
-                <i class="fa-brands fa-whatsapp"></i> Falar com Especialista
-            </a>
         </div>
 
-        <!-- QUADROS DE RESULTADOS E MEMÓRIAS SEPARADAS -->
-        <div>
-            <!-- BANNER DE ECONOMIA ANUALIZADA -->
-            <div class="banner-economia" id="bannerEconomia">
-                <div class="banner-economia-texto">
-                    <p><i class="fa-solid fa-piggy-bank mr-1"></i> Economia Anualizada Estimada:</p>
-                    <h3 id="economiaAnualVal">R$ 0,00 / ano</h3>
-                </div>
-                <div class="banner-economia-badge" id="regimeVencedorTxt">
-                    Melhor Regime
-                </div>
+        <!-- 1.3 Faturamentos -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mb-5 bg-slate-50/60 p-3.5 rounded-xl border border-slate-200">
+            <div>
+                <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">RBT12 (12 Meses)</label>
+                <input type="number" id="rbt12Input" value="360000" oninput="calcular()" 
+                    class="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-[#DA3E1B]">
             </div>
-
-            <!-- RESUMO COMPARATIVO -->
-            <div class="card">
-                <h2>Status do Fator R (LC 123/06)</h2>
-                <div class="fator-r-box">
-                    <p>Fator R Acumulado: <strong id="fatorRPct">28,00%</strong> (FS12 / RBT12)</p>
-                    <div id="fatorRBadge" class="status-badge badge-anexo3">Enquadrado no Anexo III</div>
-                </div>
-
-                <h2>Resumo Comparativo dos Regimes</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Regime Tributário</th>
-                            <th>Imposto Mensal</th>
-                            <th>Alíquota Efetiva</th>
-                            <th>Margem Bruta Est.</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr id="rowSimplesPuro">
-                            <td>Simples Nacional Puro</td>
-                            <td id="simplesPuroVal">R$ 0,00</td>
-                            <td id="simplesPuroPct">0,00%</td>
-                            <td id="margemSimplesPuro">0,00%</td>
-                        </tr>
-                        <tr id="rowSimplesHibrido">
-                            <td>Simples Híbrido + CBS (Reforma)</td>
-                            <td id="simplesHibridoVal">R$ 0,00</td>
-                            <td id="simplesHibridoPct">0,00%</td>
-                            <td id="margemSimplesHibrido">0,00%</td>
-                        </tr>
-                        <tr id="rowLucroPresumido">
-                            <td>Lucro Presumido</td>
-                            <td id="lucroPresumidoVal">R$ 0,00</td>
-                            <td id="lucroPresumidoPct">0,00%</td>
-                            <td id="margemLucroPresumido">0,00%</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div>
+                <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">FS12 - Folha (12 Meses)</label>
+                <input type="number" id="fs12Input" value="100800" oninput="calcular()" 
+                    class="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-[#DA3E1B]">
             </div>
-
-            <!-- ======================================================== -->
-            <!-- MEMÓRIAS DE CÁLCULO SEPARADAS POR REGIME (DIDÁTICAS) -->
-            <!-- ======================================================== -->
-            <div class="card">
-                <h2>Memória de Cálculo Detalhada (Passo a Passo)</h2>
-
-                <!-- 1. BLOCO: SIMPLES NACIONAL PURO -->
-                <div class="memoria-bloco">
-                    <div class="memoria-bloco-header">
-                        <span><i class="fa-solid fa-file-invoice text-slate-500 mr-1.5"></i> 1. Simples Nacional Puro</span>
-                        <span class="text-xs text-slate-500 font-normal">Alíquota Efetiva LC 123/06</span>
-                    </div>
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td>Faixa do Simples Nacional</td>
-                                <td id="puroRBT12">RBT12: R$ 0,00</td>
-                                <td id="puroFaixa">1ª Faixa</td>
-                            </tr>
-                            <tr>
-                                <td>Alíquota Nominal x Dedução da Faixa</td>
-                                <td id="puroNominal">Nominal: 0,00%</td>
-                                <td id="puroDeducao">Dedução: R$ 0,00</td>
-                            </tr>
-                            <tr>
-                                <td>Alíquota Efetiva do Simples [(RBT12 * Nom - Ded) / RBT12]</td>
-                                <td>Faturamento Base</td>
-                                <td id="puroAliqEfetiva" class="font-semibold">0,00%</td>
-                            </tr>
-                            <tr class="linha-destaque-final">
-                                <td>(=) Total DAS Simples Puro a Recolher</td>
-                                <td id="puroBaseCalculo">Base: R$ 0,00</td>
-                                <td id="puroTotalFinal">R$ 0,00</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- 2. BLOCO: SIMPLES HÍBRIDO -->
-                <div class="memoria-bloco">
-                    <div class="memoria-bloco-header">
-                        <span><i class="fa-solid fa-layer-group text-indigo-600 mr-1.5"></i> 2. Simples Híbrido (Reforma Tributária)</span>
-                        <span class="text-xs text-indigo-600 font-normal">Desmembramento + CBS Líquida</span>
-                    </div>
-                    
-                    <div class="memoria-subsecao">Etapa A: Apuração do DAS Mantido (Estados / Municípios)</div>
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td>DAS Original Estimado</td>
-                                <td>Base Integral</td>
-                                <td id="hibDasOriginal">R$ 0,00</td>
-                            </tr>
-                            <tr>
-                                <td>(−) Parcela Retirada de PIS/COFINS/CBS Federal</td>
-                                <td id="hibPercRetirada">% Retirada: 0,00%</td>
-                                <td id="hibValorRetirado" class="text-rose-600">- R$ 0,00</td>
-                            </tr>
-                            <tr style="background: #FAFAFA; font-weight: 600;">
-                                <td>(=) DAS Mantido a Recolher (Estadual/Municipal)</td>
-                                <td>DAS Reduzido</td>
-                                <td id="hibDasMantido">R$ 0,00</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <div class="memoria-subsecao">Etapa B: CBS Apurada por Fora (Débito − Crédito)</div>
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td>Base de Débito CBS (Faturamento − ISS/ICMS)</td>
-                                <td id="hibBaseDebitoCBS">Líquida: R$ 0,00</td>
-                                <td id="hibValDebitoCBS">Débito: R$ 0,00</td>
-                            </tr>
-                            <tr>
-                                <td>(−) Crédito CBS nas Entradas (Compras/Despesas c/ NF)</td>
-                                <td id="hibBaseCreditoCBS">Base Crédito: R$ 0,00</td>
-                                <td id="hibValCreditoCBS" class="text-emerald-700">Crédito: - R$ 0,00</td>
-                            </tr>
-                            <tr style="background: #FAFAFA; font-weight: 600;">
-                                <td>(=) Saldo de CBS Líquido a Recolher</td>
-                                <td>Débito − Crédito</td>
-                                <td id="hibSaldoCBS">R$ 0,00</td>
-                            </tr>
-                            <tr class="linha-destaque-final">
-                                <td>(=) Total Simples Híbrido (DAS Mantido + CBS a Recolher)</td>
-                                <td>Soma Final</td>
-                                <td id="hibTotalFinal">R$ 0,00</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- 3. BLOCO: LUCRO PRESUMIDO -->
-                <div class="memoria-bloco">
-                    <div class="memoria-bloco-header">
-                        <span><i class="fa-solid fa-landmark text-slate-600 mr-1.5"></i> 3. Lucro Presumido</span>
-                        <span class="text-xs text-slate-500 font-normal">Tributos por Esfera & Presunções</span>
-                    </div>
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td>ISS Municipal (Serviços x Alíquota Informada)</td>
-                                <td id="lpBaseISS">Serviços: R$ 0,00</td>
-                                <td id="lpValISS">R$ 0,00</td>
-                            </tr>
-                            <tr>
-                                <td>IRPJ Federal (Base Presumida x 15% + Adicional)</td>
-                                <td id="lpBaseIRPJ">Presunção: R$ 0,00</td>
-                                <td id="lpValIRPJ">R$ 0,00</td>
-                            </tr>
-                            <tr>
-                                <td>CSLL Federal (Base Presumida x 9%)</td>
-                                <td id="lpBaseCSLL">Presunção: R$ 0,00</td>
-                                <td id="lpValCSLL">R$ 0,00</td>
-                            </tr>
-                            <tr>
-                                <td>ICMS Estadual (Saídas − Entradas)</td>
-                                <td id="lpBaseICMS">Vendas: R$ 0,00</td>
-                                <td id="lpValICMS">R$ 0,00</td>
-                            </tr>
-                            <tr>
-                                <td>CBS Federal a Recolher (Débito CBS − Crédito CBS)</td>
-                                <td id="lpBaseCBS">Líquida s/ Tributos Locais</td>
-                                <td id="lpValCBS">R$ 0,00</td>
-                            </tr>
-                            <tr class="linha-destaque-final">
-                                <td>(=) Total de Tributos no Lucro Presumido no Mês</td>
-                                <td>ISS + IRPJ/CSLL + ICMS + CBS</td>
-                                <td id="lpTotalFinal">R$ 0,00</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
+            <div>
+                <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Fat. Serviços (Mês)</label>
+                <input type="number" id="fatServicos" value="30000" oninput="calcular()" 
+                    class="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-[#DA3E1B]">
+            </div>
+            <div>
+                <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Fat. Vendas (Mês)</label>
+                <input type="number" id="fatVendas" value="0" oninput="calcular()" 
+                    class="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-[#DA3E1B]">
             </div>
         </div>
-    </div>
 
-    <footer>
-        <p>PPSE Consultoria Contábil | Diagnóstico Fiscal de Alta Precisão Desenvolvido por Célio Gomes</p>
+        <!-- 1.4 Alíquotas Locais -->
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-5">
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">ISS Médio (%) <span class="text-[10px] text-slate-400">Opcional</span></label>
+                <input type="number" id="aliqISS" value="5.0" step="0.1" oninput="calcular()" class="w-full bg-white border border-slate-300 rounded-lg p-1.5 text-xs font-medium">
+            </div>
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">ICMS Saída (%) <span class="text-[10px] text-slate-400">Opcional</span></label>
+                <input type="number" id="aliqIcmsSaida" value="0.0" step="0.1" oninput="calcular()" class="w-full bg-white border border-slate-300 rounded-lg p-1.5 text-xs font-medium">
+            </div>
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">ICMS Entrada (%) <span class="text-[10px] text-slate-400">Opcional</span></label>
+                <input type="number" id="aliqIcmsEntrada" value="0.0" step="0.1" oninput="calcular()" class="w-full bg-white border border-slate-300 rounded-lg p-1.5 text-xs font-medium">
+            </div>
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Alíquota CBS (%)</label>
+                <input type="number" id="aliqCBS" value="8.0" step="0.1" oninput="calcular()" class="w-full bg-white border border-slate-300 rounded-lg p-1.5 text-xs font-bold text-indigo-700">
+            </div>
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Redução CBS (%) <span id="labelReducaoInfo" class="text-[10px] text-emerald-600 font-bold">(CNAE: -30%)</span></label>
+                <input type="number" id="percentualReducao" value="30" step="1" oninput="calcular()" class="w-full bg-white border border-slate-300 rounded-lg p-1.5 text-xs font-bold text-emerald-700">
+            </div>
+        </div>
+
+        <!-- 1.5 Créditos de CBS -->
+        <div class="border border-indigo-200 bg-indigo-50/30 rounded-xl p-4">
+            <div class="flex items-center justify-between border-b border-indigo-100 pb-2 mb-3">
+                <span class="text-xs font-bold text-indigo-950 uppercase tracking-wide flex items-center gap-1.5">
+                    <i class="fa-solid fa-receipt text-indigo-600"></i> Detalhamento de Entradas com Crédito de CBS (Regime Regular vs. Simples Nacional)
+                </span>
+                <span class="text-[11px] text-indigo-700 font-semibold bg-white px-2 py-0.5 rounded border border-indigo-200">
+                    Art. 28 da LC 214/2025
+                </span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
+                <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-2xs">
+                    <span class="text-[10px] font-bold uppercase text-emerald-700 block">Regime Regular (Integral)</span>
+                    <label class="block text-[11px] font-semibold text-slate-700 my-1">Compras c/ NF (R$)</label>
+                    <input type="number" id="comprasRegular" value="4500" oninput="calcular()" class="w-full border border-slate-300 rounded p-1.5 text-xs font-bold text-slate-800">
+                    <span class="text-[10px] text-slate-400 mt-1 block">Crédito Cheio CBS</span>
+                </div>
+
+                <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-2xs">
+                    <span class="text-[10px] font-bold uppercase text-emerald-700 block">Regime Regular (Integral)</span>
+                    <label class="block text-[11px] font-semibold text-slate-700 my-1">Despesas c/ NF (R$)</label>
+                    <input type="number" id="despesasRegular" value="2250" oninput="calcular()" class="w-full border border-slate-300 rounded p-1.5 text-xs font-bold text-slate-800">
+                    <span class="text-[10px] text-slate-400 mt-1 block">Crédito Cheio CBS</span>
+                </div>
+
+                <div class="bg-white p-3 rounded-lg border border-orange-200 shadow-2xs">
+                    <span class="text-[10px] font-bold uppercase text-[#DA3E1B] block">Simples Puro (Restrito)</span>
+                    <label class="block text-[11px] font-semibold text-slate-700 my-1">Compras de Simples (R$)</label>
+                    <input type="number" id="comprasSimples" value="3000" oninput="calcular()" class="w-full border border-slate-300 rounded p-1.5 text-xs font-bold text-slate-800">
+                    <span class="text-[10px] text-orange-600 mt-1 block">Apenas parcela federal</span>
+                </div>
+
+                <div class="bg-white p-3 rounded-lg border border-orange-200 shadow-2xs">
+                    <span class="text-[10px] font-bold uppercase text-[#DA3E1B] block">Simples Puro (Restrito)</span>
+                    <label class="block text-[11px] font-semibold text-slate-700 my-1">Despesas de Simples (R$)</label>
+                    <input type="number" id="despesasSimples" value="1500" oninput="calcular()" class="w-full border border-slate-300 rounded p-1.5 text-xs font-bold text-slate-800">
+                    <span class="text-[10px] text-orange-600 mt-1 block">Apenas parcela federal</span>
+                </div>
+
+                <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-2xs">
+                    <span class="text-[10px] font-bold uppercase text-slate-500 block">Crédito Transferido</span>
+                    <label class="block text-[11px] font-semibold text-slate-700 my-1">Alíq. Média Simples (%)</label>
+                    <input type="number" id="aliqMediaSimplesCredito" value="2.0" step="0.1" oninput="calcular()" class="w-full border border-slate-300 rounded p-1.5 text-xs font-bold text-indigo-700">
+                    <span class="text-[10px] text-slate-400 mt-1 block">Média federal do DAS</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BLOCO 2 - RESULTADOS E COMPARAÇÃO -->
+    <section class="card-section bg-white rounded-xl shadow-sm border border-[#E2E8F0] p-5 sm:p-6 mb-6">
+        <div class="flex items-center justify-between border-b-2 border-[#DA3E1B] pb-3 mb-5">
+            <h2 class="text-sm sm:text-base font-bold text-[#3D3D3C] flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-[#DA3E1B] text-white flex items-center justify-center text-xs">2</span>
+                Bloco 2: Apresentação dos Impostos & Análise de Competitividade
+            </h2>
+            <span class="text-xs text-[#595959] font-medium hidden sm:inline">Diagnóstico comparativo consolidado</span>
+        </div>
+
+        <div class="banner-economia bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-4 sm:p-5 rounded-xl shadow-md mb-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div>
+                <p class="text-xs uppercase font-bold tracking-wider text-emerald-100 flex items-center gap-1.5">
+                    <i class="fa-solid fa-piggy-bank text-amber-300 text-sm"></i> Economia Anualizada no Regime Vencedor:
+                </p>
+                <h3 id="economiaAnualVal" class="text-2xl sm:text-3xl font-black text-white tracking-tight mt-0.5">R$ 0,00 / ano</h3>
+                <p class="text-xs text-emerald-100 mt-0.5">Diferencial calculado em relação ao segundo melhor enquadramento tributário.</p>
+            </div>
+            <div id="regimeVencedorTxt" class="bg-white/20 backdrop-blur-md px-4 py-2.5 rounded-lg border border-white/30 text-xs sm:text-sm font-black uppercase tracking-wider text-white text-center">
+                Vencedor: Calculando...
+            </div>
+        </div>
+
+        <div class="bg-amber-50 border-2 border-amber-300 rounded-xl p-4 sm:p-5 mb-5 shadow-2xs">
+            <div class="flex items-start gap-3">
+                <div class="w-10 h-10 rounded-lg bg-amber-500 text-white flex items-center justify-center text-lg flex-shrink-0 shadow-sm">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div class="flex-1">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                        <h4 class="text-xs sm:text-sm font-black text-amber-950 uppercase tracking-wide">
+                            Impacto da Não Cumulatividade: Perda de Crédito ao Comprar de Optantes do Simples
+                        </h4>
+                        <span id="badgeEficienciaCadeia" class="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-amber-200 text-amber-900 w-fit">
+                            Eficiência: 0%
+                        </span>
+                    </div>
+                    <p class="text-xs text-amber-900 mt-1 leading-relaxed">
+                        Ao adquirir produtos e serviços de fornecedores enquadrados no <strong>Simples Nacional Puro</strong>, sua empresa aproveita apenas a fração federal do DAS (média de 2%), perdendo o crédito cheio da CBS (8%).
+                    </p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3 pt-3 border-t border-amber-200/80 text-center">
+                        <div class="bg-white p-2.5 rounded-lg border border-amber-200">
+                            <span class="text-[10px] font-bold text-slate-500 uppercase block">Crédito Gerado (Simples Puro)</span>
+                            <strong id="creditoRealSimples" class="text-xs font-black text-slate-800">R$ 0,00</strong>
+                            <span class="text-[9px] text-slate-400 block">Fração média ~2%</span>
+                        </div>
+                        <div class="bg-white p-2.5 rounded-lg border border-amber-200">
+                            <span class="text-[10px] font-bold text-emerald-700 uppercase block">Crédito se Fosse Regular</span>
+                            <strong id="creditoPotencialRegular" class="text-xs font-black text-emerald-700">R$ 0,00</strong>
+                            <span class="text-[9px] text-emerald-600 block">Alíquota integral 8%</span>
+                        </div>
+                        <div class="bg-rose-50 p-2.5 rounded-lg border border-rose-200">
+                            <span class="text-[10px] font-bold text-rose-700 uppercase block">Perda Efetiva de Crédito</span>
+                            <strong id="perdaCreditoValor" class="text-xs sm:text-sm font-black text-rose-700">R$ 0,00 / mês</strong>
+                            <span id="perdaCreditoAnual" class="text-[10px] font-extrabold text-rose-600 block">R$ 0,00 / ano</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse text-xs">
+                <thead>
+                    <tr class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
+                        <th class="p-3 text-left">Regime Tributário</th>
+                        <th class="p-3 text-left">Imposto Mensal (R$)</th>
+                        <th class="p-3 text-left">Alíquota Efetiva</th>
+                        <th class="p-3 text-left">Margem Bruta Est.</th>
+                        <th class="p-3 text-center">Diagnóstico</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200">
+                    <tr id="rowSimplesPuro" class="transition hover:bg-slate-50">
+                        <td class="p-3 font-semibold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-circle text-slate-300 text-[8px]"></i> Simples Nacional Puro
+                        </td>
+                        <td id="simplesPuroVal" class="p-3 font-bold text-slate-900">R$ 0,00</td>
+                        <td id="simplesPuroPct" class="p-3">0,00%</td>
+                        <td id="margemSimplesPuro" class="p-3">0,00%</td>
+                        <td id="diagSimplesPuro" class="p-3 text-center font-bold text-[11px] text-slate-500">Alternativa 1</td>
+                    </tr>
+                    <tr id="rowSimplesHibrido" class="transition hover:bg-slate-50">
+                        <td class="p-3 font-semibold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-circle text-indigo-400 text-[8px]"></i> Simples Híbrido + CBS (Reforma)
+                        </td>
+                        <td id="simplesHibridoVal" class="p-3 font-bold text-slate-900">R$ 0,00</td>
+                        <td id="simplesHibridoPct" class="p-3">0,00%</td>
+                        <td id="margemSimplesHibrido" class="p-3">0,00%</td>
+                        <td id="diagSimplesHibrido" class="p-3 text-center font-bold text-[11px] text-indigo-600">Alternativa 2</td>
+                    </tr>
+                    <tr id="rowLucroPresumido" class="transition hover:bg-slate-50">
+                        <td class="p-3 font-semibold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-circle text-slate-300 text-[8px]"></i> Lucro Presumido
+                        </td>
+                        <td id="lucroPresumidoVal" class="p-3 font-bold text-slate-900">R$ 0,00</td>
+                        <td id="lucroPresumidoPct" class="p-3">0,00%</td>
+                        <td id="margemLucroPresumido" class="p-3">0,00%</td>
+                        <td id="diagLucroPresumido" class="p-3 text-center font-bold text-[11px] text-slate-500">Alternativa 3</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- BLOCO 3 - RACIONAL DO CÁLCULO -->
+    <section class="card-section bg-white rounded-xl shadow-sm border border-[#E2E8F0] p-5 sm:p-6 mb-8">
+        <div class="flex items-center justify-between border-b-2 border-[#DA3E1B] pb-3 mb-5">
+            <h2 class="text-sm sm:text-base font-bold text-[#3D3D3C] flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-[#DA3E1B] text-white flex items-center justify-center text-xs">3</span>
+                Bloco 3: Racional do Cálculo & Memória Auditável (Passo a Passo)
+            </h2>
+            <span class="text-xs text-[#595959] font-medium hidden sm:inline">Validação linha a linha de cada regime</span>
+        </div>
+
+        <div class="print-grid grid grid-cols-1 lg:grid-cols-3 gap-5">
+            
+            <!-- 3.1 Simples Puro -->
+            <div class="memoria-bloco border border-slate-200 rounded-xl overflow-hidden flex flex-col justify-between shadow-2xs">
+                <div>
+                    <div class="memoria-bloco-header bg-slate-100 p-3.5 border-b border-slate-200 font-bold text-xs text-slate-800 flex items-center justify-between">
+                        <span><i class="fa-solid fa-file-invoice text-[#DA3E1B] mr-1.5"></i> Simples Puro (LC 123/06)</span>
+                        <span class="text-[10px] bg-white px-2 py-0.5 rounded font-bold text-slate-600 border border-slate-200">Guia Única</span>
+                    </div>
+                    <table class="w-full text-xs">
+                        <tbody class="divide-y divide-slate-100">
+                            <tr>
+                                <td class="p-2.5 text-slate-600">Faixa Enquadrada</td>
+                                <td id="puroFaixa" class="p-2.5 text-right font-semibold text-slate-800">1ª Faixa</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2.5 text-slate-600">Alíquota Nominal</td>
+                                <td id="puroNominal" class="p-2.5 text-right font-semibold text-slate-800">0,00%</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2.5 text-slate-600">Parcela a Deduzir</td>
+                                <td id="puroDeducao" class="p-2.5 text-right font-semibold text-slate-800">R$ 0,00</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2.5 text-slate-600">Alíquota Efetiva Apurada</td>
+                                <td id="puroAliqEfetiva" class="p-2.5 text-right font-extrabold text-[#DA3E1B]">0,00%</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2.5 text-slate-600">Faturamento da Base</td>
+                                <td id="puroBaseCalculo" class="p-2.5 text-right text-slate-700">R$ 0,00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="linha-destaque-final bg-slate-50 p-3.5 border-t-2 border-slate-200 flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-800">(=) Total DAS a Recolher:</span>
+                    <strong id="puroTotalFinal" class="text-sm font-black text-[#DA3E1B]">R$ 0,00</strong>
+                </div>
+            </div>
+
+            <!-- 3.2 Simples Híbrido -->
+            <div class="memoria-bloco border-2 border-indigo-200 rounded-xl overflow-hidden flex flex-col justify-between shadow-2xs">
+                <div>
+                    <div class="memoria-bloco-header bg-indigo-50 p-3.5 border-b border-indigo-200 font-bold text-xs text-indigo-950 flex items-center justify-between">
+                        <span><i class="fa-solid fa-layer-group text-indigo-600 mr-1.5"></i> Simples Híbrido (Reforma)</span>
+                        <span class="text-[10px] bg-indigo-600 text-white px-2 py-0.5 rounded font-bold">DAS + CBS</span>
+                    </div>
+
+                    <div class="memoria-subsecao bg-slate-50 px-3 py-1.5 text-[10px] font-bold text-slate-600 border-b border-slate-200 uppercase">
+                        Etapa A: DAS Mantido (Estados & Municípios)
+                    </div>
+                    <table class="w-full text-xs">
+                        <tbody class="divide-y divide-slate-100">
+                            <tr>
+                                <td class="p-2 text-slate-600">DAS Simples Original</td>
+                                <td id="hibDasOriginal" class="p-2 text-right font-semibold text-slate-700">R$ 0,00</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-slate-600">(−) Parcela Retirada Federal</td>
+                                <td id="hibValorRetirado" class="p-2 text-right font-semibold text-rose-600">- R$ 0,00</td>
+                            </tr>
+                            <tr class="bg-indigo-50/40">
+                                <td class="p-2 font-bold text-indigo-950">(=) DAS Mantido Estadual/Municipal</td>
+                                <td id="hibDasMantido" class="p-2 text-right font-bold text-indigo-950">R$ 0,00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="memoria-subsecao bg-slate-50 px-3 py-1.5 text-[10px] font-bold text-slate-600 border-b border-slate-200 border-t uppercase">
+                        Etapa B: CBS Líquida (Débito − Créditos Detalhados)
+                    </div>
+                    <table class="w-full text-xs">
+                        <tbody class="divide-y divide-slate-100">
+                            <tr>
+                                <td class="p-2 text-slate-600">Base Débito CBS (s/ ISS e ICMS)</td>
+                                <td id="hibBaseDebitoCBS" class="p-2 text-right text-slate-700">R$ 0,00</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-slate-600">Débito CBS (c/ Redução CNAE)</td>
+                                <td id="hibValDebitoCBS" class="p-2 text-right font-bold text-slate-800">R$ 0,00</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-slate-600">(−) Créditos Fornecedores Regulares</td>
+                                <td id="hibCreditoRegular" class="p-2 text-right font-semibold text-emerald-700">- R$ 0,00</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-slate-600">(−) Créditos Fornecedores Simples</td>
+                                <td id="hibCreditoSimples" class="p-2 text-right font-semibold text-emerald-700">- R$ 0,00</td>
+                            </tr>
+                            <tr class="bg-indigo-50/40">
+                                <td class="p-2 font-bold text-indigo-950">(=) Saldo CBS a Recolher</td>
+                                <td id="hibSaldoCBS" class="p-2 text-right font-bold text-indigo-950">R$ 0,00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="linha-destaque-final bg-indigo-50 p-3.5 border-t-2 border-indigo-200 flex items-center justify-between">
+                    <span class="text-xs font-bold text-indigo-950">(=) Total Simples Híbrido:</span>
+                    <strong id="hibTotalFinal" class="text-sm font-black text-indigo-700">R$ 0,00</strong>
+                </div>
+            </div>
+
+            <!-- 3.3 Lucro Presumido -->
+            <div class="memoria-bloco border border-slate-200 rounded-xl overflow-hidden flex flex-col justify-between shadow-2xs">
+                <div>
+                    <div class="memoria-bloco-header bg-slate-100 p-3.5 border-b border-slate-200 font-bold text-xs text-slate-800 flex items-center justify-between">
+                        <span><i class="fa-solid fa-landmark text-slate-600 mr-1.5"></i> Lucro Presumido</span>
+                        <span class="text-[10px] bg-white px-2 py-0.5 rounded font-bold text-slate-600 border border-slate-200">Por Tributo</span>
+                    </div>
+                    <table class="w-full text-xs">
+                        <tbody class="divide-y divide-slate-100">
+                            <tr>
+                                <td class="p-2 text-slate-600">ISS Municipal (Serviços)</td>
+                                <td id="lpValISS" class="p-2 text-right font-semibold text-slate-800">R$ 0,00</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-slate-600">IRPJ Federal (Presunção + Adicional)</td>
+                                <td id="lpValIRPJ" class="p-2 text-right font-semibold text-slate-800">R$ 0,00</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-slate-600">CSLL Federal (9% Presumido)</td>
+                                <td id="lpValCSLL" class="p-2 text-right font-semibold text-slate-800">R$ 0,00</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-slate-600">ICMS Estadual Líquido (Saída − Entrada)</td>
+                                <td id="lpValICMS" class="p-2 text-right font-semibold text-slate-800">R$ 0,00</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-slate-600">CBS Federal a Recolher</td>
+                                <td id="lpValCBS" class="p-2 text-right font-semibold text-indigo-700">R$ 0,00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="linha-destaque-final bg-slate-50 p-3.5 border-t-2 border-slate-200 flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-800">(=) Total Lucro Presumido:</span>
+                    <strong id="lpTotalFinal" class="text-sm font-black text-slate-900">R$ 0,00</strong>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- RODAPÉ -->
+    <footer class="text-center text-xs text-[#595959] mt-6 border-t border-slate-200 pt-4">
+        <p><strong>PPSE Consultoria Contábil</strong> • Diagnóstico Fiscal de Alta Precisão & Planejamento Tributário Estratégico</p>
+        <p class="text-[11px] text-slate-400 mt-0.5">Desenvolvido com base na legislação da LC 123/2006 e diretrizes da Reforma Tributária (LC 214/2025).</p>
     </footer>
+
 </div>
 
-<!-- CONTADOR FLUTUANTE (CANTO INFERIOR DIREITO) -->
-<div class="floating-counter no-print">
-    <div class="floating-counter-icon">
+<!-- CONTADOR FLUTUANTE -->
+<div class="floating-counter no-print flex items-center gap-3 bg-[#3D3D3C] border border-[#595959] text-white px-4 py-2.5 rounded-xl shadow-xl fixed bottom-4 right-4 z-50">
+    <div class="w-8 h-8 rounded-lg bg-orange-600/20 text-[#DA3E1B] flex items-center justify-center text-sm font-bold">
         <i class="fa-solid fa-chart-line"></i>
     </div>
-    <div class="floating-counter-info">
-        <span class="floating-counter-title">Análises Realizadas</span>
-        <span id="contadorFlutuante" class="floating-counter-value">+0</span>
-        <span class="floating-counter-sub">Simulações acumuladas</span>
+    <div>
+        <span class="text-[9px] uppercase tracking-wider text-slate-300 font-bold block">Acessos & Simulações</span>
+        <h4 id="contadorFlutuante" class="text-sm font-black text-white leading-none my-0.5">+1.420</h4>
+        <span class="text-[9px] text-slate-400 block">Total acumulado em tempo real</span>
     </div>
 </div>
 
@@ -582,6 +605,10 @@
         presuncaoCSLLVend: 0.12
     };
 
+    function formatBRL(val) {
+        return "R$ " + (val || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
     function mapearRegrasPorCNAE(codigo) {
         if (!codigo || codigo === 'manual') {
             return {
@@ -602,135 +629,38 @@
         const prefixo4 = clean.substring(0, 4);
         const div = parseInt(clean.substring(0, 2), 10);
 
-        // 1. Contabilidade (6920) -> Anexo III | Redução CBS 30%
         if (prefixo4 === '6920') {
-            return {
-                anexo: 'III',
-                presuncaoIRPJServ: 0.32,
-                presuncaoCSLLServ: 0.32,
-                presuncaoIRPJVend: 0.08,
-                presuncaoCSLLVend: 0.12,
-                reducaoCBS: 30
-            };
+            return { anexo: 'III', presuncaoIRPJServ: 0.32, presuncaoCSLLServ: 0.32, presuncaoIRPJVend: 0.08, presuncaoCSLLVend: 0.12, reducaoCBS: 30 };
         }
-
-        // 2. Promoção de Vendas (7319) -> Anexo III | Redução CBS 0%
         if (prefixo4 === '7319') {
-            return {
-                anexo: 'III',
-                presuncaoIRPJServ: 0.32,
-                presuncaoCSLLServ: 0.32,
-                presuncaoIRPJVend: 0.08,
-                presuncaoCSLLVend: 0.12,
-                reducaoCBS: 0
-            };
+            return { anexo: 'III', presuncaoIRPJServ: 0.32, presuncaoCSLLServ: 0.32, presuncaoIRPJVend: 0.08, presuncaoCSLLVend: 0.12, reducaoCBS: 0 };
         }
-
-        // 3. Advocacia (6911) -> Anexo IV | Redução CBS 30%
         if (prefixo4 === '6911') {
-            return {
-                anexo: 'IV',
-                presuncaoIRPJServ: 0.32,
-                presuncaoCSLLServ: 0.32,
-                presuncaoIRPJVend: 0.08,
-                presuncaoCSLLVend: 0.12,
-                reducaoCBS: 30
-            };
+            return { anexo: 'IV', presuncaoIRPJServ: 0.32, presuncaoCSLLServ: 0.32, presuncaoIRPJVend: 0.08, presuncaoCSLLVend: 0.12, reducaoCBS: 30 };
         }
-
-        // 4. Engenharia e Arquitetura (Divisão 71) -> Anexo V | Redução CBS 30%
         if (div === 71) {
-            return {
-                anexo: 'V',
-                presuncaoIRPJServ: 0.32,
-                presuncaoCSLLServ: 0.32,
-                presuncaoIRPJVend: 0.08,
-                presuncaoCSLLVend: 0.12,
-                reducaoCBS: 30
-            };
+            return { anexo: 'V', presuncaoIRPJServ: 0.32, presuncaoCSLLServ: 0.32, presuncaoIRPJVend: 0.08, presuncaoCSLLVend: 0.12, reducaoCBS: 30 };
         }
-
-        // 5. Saúde e Psicologia (Divisão 86) -> Anexo V | Redução CBS 60%
         if (div === 86) {
-            return {
-                anexo: 'V',
-                presuncaoIRPJServ: 0.08,
-                presuncaoCSLLServ: 0.12,
-                presuncaoIRPJVend: 0.08,
-                presuncaoCSLLVend: 0.12,
-                reducaoCBS: 60
-            };
+            return { anexo: 'V', presuncaoIRPJServ: 0.08, presuncaoCSLLServ: 0.12, presuncaoIRPJVend: 0.08, presuncaoCSLLVend: 0.12, reducaoCBS: 60 };
         }
-
-        // 6. Ensino e Educação (Divisão 85) -> Anexo III | Redução CBS 60%
         if (div === 85) {
-            return {
-                anexo: 'III',
-                presuncaoIRPJServ: 0.32,
-                presuncaoCSLLServ: 0.32,
-                presuncaoIRPJVend: 0.08,
-                presuncaoCSLLVend: 0.12,
-                reducaoCBS: 60
-            };
+            return { anexo: 'III', presuncaoIRPJServ: 0.32, presuncaoCSLLServ: 0.32, presuncaoIRPJVend: 0.08, presuncaoCSLLVend: 0.12, reducaoCBS: 60 };
         }
-
-        // 7. Comércio (45 a 47) -> Anexo I | Redução CBS 0%
         if (div >= 45 && div <= 47) {
-            return {
-                anexo: 'I',
-                presuncaoIRPJServ: 0.32,
-                presuncaoCSLLServ: 0.32,
-                presuncaoIRPJVend: 0.08,
-                presuncaoCSLLVend: 0.12,
-                reducaoCBS: 0
-            };
+            return { anexo: 'I', presuncaoIRPJServ: 0.32, presuncaoCSLLServ: 0.32, presuncaoIRPJVend: 0.08, presuncaoCSLLVend: 0.12, reducaoCBS: 0 };
         }
-
-        // 8. Indústria (10 a 33) -> Anexo II | Redução CBS 0%
         if (div >= 10 && div <= 33) {
-            return {
-                anexo: 'II',
-                presuncaoIRPJServ: 0.32,
-                presuncaoCSLLServ: 0.32,
-                presuncaoIRPJVend: 0.08,
-                presuncaoCSLLVend: 0.12,
-                reducaoCBS: 0
-            };
+            return { anexo: 'II', presuncaoIRPJServ: 0.32, presuncaoCSLLServ: 0.32, presuncaoIRPJVend: 0.08, presuncaoCSLLVend: 0.12, reducaoCBS: 0 };
         }
-
-        // 9. Construção Civil e Vigilância -> Anexo IV | Redução CBS 0%
         if (div === 41 || div === 42 || div === 43 || div === 80 || div === 81) {
-            return {
-                anexo: 'IV',
-                presuncaoIRPJServ: 0.32,
-                presuncaoCSLLServ: 0.32,
-                presuncaoIRPJVend: 0.08,
-                presuncaoCSLLVend: 0.12,
-                reducaoCBS: 0
-            };
+            return { anexo: 'IV', presuncaoIRPJServ: 0.32, presuncaoCSLLServ: 0.32, presuncaoIRPJVend: 0.08, presuncaoCSLLVend: 0.12, reducaoCBS: 0 };
         }
-
-        // 10. TI e Consultoria -> Anexo V | Redução CBS 0%
         if ((div >= 62 && div <= 63) || div === 70 || div === 73) {
-            return {
-                anexo: 'V',
-                presuncaoIRPJServ: 0.32,
-                presuncaoCSLLServ: 0.32,
-                presuncaoIRPJVend: 0.08,
-                presuncaoCSLLVend: 0.12,
-                reducaoCBS: 0
-            };
+            return { anexo: 'V', presuncaoIRPJServ: 0.32, presuncaoCSLLServ: 0.32, presuncaoIRPJVend: 0.08, presuncaoCSLLVend: 0.12, reducaoCBS: 0 };
         }
 
-        // Padrão Geral
-        return {
-            anexo: 'III',
-            presuncaoIRPJServ: 0.32,
-            presuncaoCSLLServ: 0.32,
-            presuncaoIRPJVend: 0.08,
-            presuncaoCSLLVend: 0.12,
-            reducaoCBS: 0
-        };
+        return { anexo: 'III', presuncaoIRPJServ: 0.32, presuncaoCSLLServ: 0.32, presuncaoIRPJVend: 0.08, presuncaoCSLLVend: 0.12, reducaoCBS: 0 };
     }
 
     async function consultarCNPJ() {
@@ -744,7 +674,7 @@
         }
 
         btn.disabled = true;
-        btn.innerText = 'Buscando...';
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Buscando...';
 
         let data = null;
         try {
@@ -760,7 +690,7 @@
         }
 
         btn.disabled = false;
-        btn.innerText = 'Buscar';
+        btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-down"></i> Buscar CNPJ';
 
         if (!data) {
             alert('Não foi possível localizar o CNPJ nas bases públicas. Você pode selecionar a atividade ou preencher manualmente.');
@@ -769,11 +699,16 @@
 
         const codCnae = data.cnae_fiscal || (data.cnae_fiscal_principal && data.cnae_fiscal_principal.codigo) || '';
         const descCnae = data.cnae_fiscal_descricao || (data.cnae_fiscal_principal && data.cnae_fiscal_principal.descricao) || 'Atividade principal';
+        const razaoNome = data.razao_social || data.nome_fantasia || 'Identificada';
 
-        const cnpjInfo = document.getElementById('cnpjInfo');
-        cnpjInfo.style.display = 'block';
-        document.getElementById('razaoSocialTxt').innerHTML = `<strong>Razão:</strong> ${data.razao_social || data.nome_fantasia || 'Identificada'}`;
-        document.getElementById('cnaePrincipalTxt').innerHTML = `<strong>Atividade:</strong> ${codCnae} - ${descCnae}`;
+        const fbBox = document.getElementById('cnpjInfoFeedback');
+        fbBox.classList.remove('hidden');
+        document.getElementById('razaoSocialFeedback').innerText = razaoNome;
+        document.getElementById('cnaePrincipalFeedback').innerText = `${codCnae} - ${descCnae}`;
+
+        document.getElementById('printRazaoSocial').innerText = razaoNome;
+        document.getElementById('printCNPJ').innerText = input.value;
+        document.getElementById('printCNAE').innerText = `${codCnae} - ${descCnae}`;
 
         const selectCnae = document.getElementById('cnaeSelect');
         selectCnae.innerHTML = '';
@@ -813,14 +748,20 @@
         inputReducao.value = regras.reducaoCBS;
 
         const labelInfo = document.getElementById('labelReducaoInfo');
+        const printReducaoBadge = document.getElementById('printReducaoBadge');
         if (regras.reducaoCBS > 0) {
             labelInfo.innerText = `(CNAE: -${regras.reducaoCBS}%)`;
-            labelInfo.style.color = '#10B981';
-            labelInfo.style.fontWeight = 'bold';
+            labelInfo.className = "text-[10px] text-emerald-600 font-bold";
+            printReducaoBadge.innerText = `Redução CBS/IBS: ${regras.reducaoCBS}%`;
         } else {
             labelInfo.innerText = `(Via CNAE: 0%)`;
-            labelInfo.style.color = 'var(--ppse-medium-gray)';
-            labelInfo.style.fontWeight = 'normal';
+            labelInfo.className = "text-[10px] text-slate-400 font-normal";
+            printReducaoBadge.innerText = `Redução CBS/IBS: 0%`;
+        }
+
+        const selectCnae = document.getElementById('cnaeSelect');
+        if (selectCnae && selectCnae.selectedOptions && selectCnae.selectedOptions.length > 0) {
+            document.getElementById('printCNAE').innerText = selectCnae.selectedOptions[0].innerText;
         }
 
         calcular();
@@ -842,6 +783,7 @@
         v = v.replace(/\.(\d{3})(\d)/, '.$1/$2');
         v = v.replace(/(\d{4})(\d)/, '$1-$2');
         e.target.value = v;
+        document.getElementById('printCNPJ').innerText = v || 'Não informado';
     });
 
     function obterFaixa(rbt12) {
@@ -851,10 +793,6 @@
         if (rbt12 <= 1800000) return 3;
         if (rbt12 <= 3600000) return 4;
         return 5;
-    }
-
-    function formatBRL(val) {
-        return "R$ " + val.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
     }
 
     function calcular() {
@@ -867,14 +805,17 @@
 
         if (rbt12 === 0 && fatTotalMes > 0) rbt12 = fatTotalMes * 12;
 
-        const comprasNF = parseFloat(document.getElementById('comprasNF').value) || 0;
-        const despesasCBS = parseFloat(document.getElementById('despesasCBS').value) || 0;
+        const compReg = parseFloat(document.getElementById('comprasRegular').value) || 0;
+        const despReg = parseFloat(document.getElementById('despesasRegular').value) || 0;
+        const compSimp = parseFloat(document.getElementById('comprasSimples').value) || 0;
+        const despSimp = parseFloat(document.getElementById('despesasSimples').value) || 0;
 
+        const aliqMediaSimp = (parseFloat(document.getElementById('aliqMediaSimplesCredito').value) || 2.0) / 100;
         const aliqISSInput = (parseFloat(document.getElementById('aliqISS').value) || 0) / 100;
         const pReducaoCBS = (parseFloat(document.getElementById('percentualReducao').value) || 0) / 100;
         const aliqIcmsSaida = (parseFloat(document.getElementById('aliqIcmsSaida').value) || 0) / 100;
         const aliqIcmsEntrada = (parseFloat(document.getElementById('aliqIcmsEntrada').value) || 0) / 100;
-        const aliqCBSInput = (parseFloat(document.getElementById('aliqCBS').value) || 8) / 100;
+        const aliqCBSInput = (parseFloat(document.getElementById('aliqCBS').value) || 8.0) / 100;
         const anexoSelect = document.getElementById('anexoSelect').value;
 
         if (fatTotalMes === 0 && rbt12 === 0) return;
@@ -889,20 +830,18 @@
         if (anexoSelect === 'V') {
             if (fatorR >= 0.28) {
                 anexoEfetivo = 'III';
-                badge.innerText = "Migrou para Anexo III (Fator R >= 28,00%)";
-                badge.className = "status-badge badge-anexo3";
+                badge.innerText = "Migrou Anexo III (≥28%)";
+                badge.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800";
             } else {
-                badge.innerText = "Permanece no Anexo V (Fator R < 28,00%)";
-                badge.className = "status-badge badge-anexo5";
+                badge.innerText = "Permanece Anexo V (<28%)";
+                badge.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800";
             }
         } else {
-            badge.innerText = "Atividade tributada pelo Anexo " + anexoSelect;
-            badge.className = "status-badge badge-anexo3";
+            badge.innerText = "Tributado Anexo " + anexoSelect;
+            badge.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200 text-slate-800";
         }
 
-        // ========================================================
-        // 1. CÁLCULOS: SIMPLES NACIONAL PURO
-        // ========================================================
+        // 1. Simples Nacional Puro
         const faixaIdx = obterFaixa(rbt12);
         const dadosAnexo = TABELAS_SIMPLES[anexoEfetivo];
         const nom = dadosAnexo.nominal[faixaIdx];
@@ -913,35 +852,57 @@
 
         const impostoSimplesPuro = fatTotalMes * aliqEfetivaSimples;
 
-        // ========================================================
-        // 2. CÁLCULOS: SIMPLES HÍBRIDO
-        // ========================================================
+        // 2. Créditos Detalhados de CBS
+        const baseComprasRegularLiq = compReg * (1 - aliqIcmsEntrada);
+        const creditoComprasRegular = baseComprasRegularLiq * aliqCBSInput;
+        const creditoDespesasRegular = despReg * aliqCBSInput;
+        const totalCreditoRegular = creditoComprasRegular + creditoDespesasRegular;
+
+        const creditoComprasSimples = compSimp * aliqMediaSimp;
+        const creditoDespesasSimples = despSimp * aliqMediaSimp;
+        const totalCreditoSimples = creditoComprasSimples + creditoDespesasSimples;
+
+        const totalCreditosCBS = totalCreditoRegular + totalCreditoSimples;
+
+        // Evidência de Perda de Crédito
+        const creditoSeFosseRegularSimples = (compSimp * (1 - aliqIcmsEntrada) + despSimp) * aliqCBSInput;
+        const perdaMensalCredito = Math.max(0, creditoSeFosseRegularSimples - totalCreditoSimples);
+        const perdaAnualCredito = perdaMensalCredito * 12;
+
+        let eficienciaCadeia = 100;
+        if (creditoSeFosseRegularSimples > 0) {
+            eficienciaCadeia = (totalCreditoSimples / creditoSeFosseRegularSimples) * 100;
+        }
+
+        document.getElementById('creditoRealSimples').innerText = formatBRL(totalCreditoSimples);
+        document.getElementById('creditoPotencialRegular').innerText = formatBRL(creditoSeFosseRegularSimples);
+        document.getElementById('perdaCreditoValor').innerText = formatBRL(perdaMensalCredito);
+        document.getElementById('perdaCreditoAnual').innerText = "- " + formatBRL(perdaAnualCredito) + " / ano";
+        
+        const badgeEficiencia = document.getElementById('badgeEficienciaCadeia');
+        badgeEficiencia.innerText = `Aproveitamento: ${eficienciaCadeia.toFixed(1)}%`;
+        if (eficienciaCadeia < 50) {
+            badgeEficiencia.className = "text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-rose-200 text-rose-900 w-fit";
+        } else {
+            badgeEficiencia.className = "text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-amber-200 text-amber-900 w-fit";
+        }
+
+        // 3. Simples Híbrido
         const parteRetiradaPct = dadosAnexo.cbsHibrido;
         const aliqSimplesHibrido = aliqEfetivaSimples * (1 - parteRetiradaPct);
         const dasSimplesMantido = fatTotalMes * aliqSimplesHibrido;
         const valorDasRetirado = impostoSimplesPuro - dasSimplesMantido;
 
-        // Apuração CBS
         const valorISS = fatServ * aliqISSInput;
         const valorICMSDebito = fatVend * aliqIcmsSaida;
-        
-        const baseDebitoServicos = Math.max(0, fatServ - valorISS);
-        const baseDebitoVendas = Math.max(0, fatVend - valorICMSDebito);
-        const baseDebitoCBS = baseDebitoServicos + baseDebitoVendas;
-        
+        const baseDebitoCBS = Math.max(0, (fatServ - valorISS) + (fatVend - valorICMSDebito));
         const aliqEfetivaCBS = aliqCBSInput * (1 - pReducaoCBS);
         const valDebitoCBS = baseDebitoCBS * aliqEfetivaCBS;
-        
-        const baseComprasComCredito = comprasNF * (1 - aliqIcmsEntrada);
-        const baseCreditoCBS = baseComprasComCredito + despesasCBS;
-        const valCreditoCBS = baseCreditoCBS * aliqCBSInput;
-        
-        const cbsLiquido = Math.max(0, valDebitoCBS - valCreditoCBS);
+
+        const cbsLiquido = Math.max(0, valDebitoCBS - totalCreditosCBS);
         const totalSimplesHibrido = dasSimplesMantido + cbsLiquido;
 
-        // ========================================================
-        // 3. CÁLCULOS: LUCRO PRESUMIDO
-        // ========================================================
+        // 4. Lucro Presumido
         const baseIRPJ = (fatServ * parametrosCNAEAtual.presuncaoIRPJServ) + (fatVend * parametrosCNAEAtual.presuncaoIRPJVend);
         const baseCSLL = (fatServ * parametrosCNAEAtual.presuncaoCSLLServ) + (fatVend * parametrosCNAEAtual.presuncaoCSLLVend);
 
@@ -952,16 +913,14 @@
         const totalCSLL = baseCSLL * 0.09;
 
         const icmsDebito = fatVend * aliqIcmsSaida;
-        const icmsCredito = comprasNF * aliqIcmsEntrada;
+        const icmsCredito = compReg * aliqIcmsEntrada;
         const icmsLiquido = Math.max(0, icmsDebito - icmsCredito);
 
         const totalISS = valorISS;
 
         const totalLucroPresumido = totalIRPJ + totalCSLL + cbsLiquido + icmsLiquido + totalISS;
 
-        // ========================================================
-        // EXIBIÇÃO: QUADRO RESUMO COMPARATIVO
-        // ========================================================
+        // Tabela Resumo
         document.getElementById('simplesPuroVal').innerText = formatBRL(impostoSimplesPuro);
         document.getElementById('simplesPuroPct').innerText = (aliqEfetivaSimples * 100).toFixed(2) + "%";
         document.getElementById('margemSimplesPuro').innerText = (((fatTotalMes - impostoSimplesPuro) / fatTotalMes) * 100).toFixed(2) + "%";
@@ -974,58 +933,11 @@
         document.getElementById('lucroPresumidoPct').innerText = ((totalLucroPresumido / fatTotalMes) * 100).toFixed(2) + "%";
         document.getElementById('margemLucroPresumido').innerText = (((fatTotalMes - totalLucroPresumido) / fatTotalMes) * 100).toFixed(2) + "%";
 
-        // ========================================================
-        // EXIBIÇÃO: MEMÓRIAS DE CÁLCULO SEPARADAS
-        // ========================================================
-
-        // 1. BLOCO SIMPLES PURO
-        document.getElementById('puroRBT12').innerText = "RBT12: " + formatBRL(rbt12);
-        document.getElementById('puroFaixa').innerText = (faixaIdx + 1) + "ª Faixa (Anexo " + anexoEfetivo + ")";
-        document.getElementById('puroNominal').innerText = "Nominal: " + (nom * 100).toFixed(2) + "%";
-        document.getElementById('puroDeducao').innerText = "Dedução: " + formatBRL(ded);
-        document.getElementById('puroAliqEfetiva').innerText = (aliqEfetivaSimples * 100).toFixed(2) + "%";
-        document.getElementById('puroBaseCalculo').innerText = "Fat. Mês: " + formatBRL(fatTotalMes);
-        document.getElementById('puroTotalFinal').innerText = formatBRL(impostoSimplesPuro);
-
-        // 2. BLOCO SIMPLES HÍBRIDO
-        document.getElementById('hibDasOriginal').innerText = formatBRL(impostoSimplesPuro);
-        document.getElementById('hibPercRetirada').innerText = "Taxa: " + (parteRetiradaPct * 100).toFixed(2) + "%";
-        document.getElementById('hibValorRetirado').innerText = "- " + formatBRL(valorDasRetirado);
-        document.getElementById('hibDasMantido').innerText = formatBRL(dasSimplesMantido);
-
-        const txtReducao = pReducaoCBS > 0 ? ` (c/ Red. ${(pReducaoCBS*100).toFixed(0)}%)` : '';
-        document.getElementById('hibBaseDebitoCBS').innerText = "Base: " + formatBRL(baseDebitoCBS) + ` x ${(aliqEfetivaCBS*100).toFixed(2)}%` + txtReducao;
-        document.getElementById('hibValDebitoCBS').innerText = formatBRL(valDebitoCBS);
-        document.getElementById('hibBaseCreditoCBS').innerText = "Base: " + formatBRL(baseCreditoCBS) + ` x ${(aliqCBSInput*100).toFixed(2)}%`;
-        document.getElementById('hibValCreditoCBS').innerText = "- " + formatBRL(valCreditoCBS);
-        document.getElementById('hibSaldoCBS').innerText = formatBRL(cbsLiquido);
-        document.getElementById('hibTotalFinal').innerText = formatBRL(totalSimplesHibrido);
-
-        // 3. BLOCO LUCRO PRESUMIDO
-        document.getElementById('lpBaseISS').innerText = "Fat: " + formatBRL(fatServ) + ` x ${(aliqISSInput*100).toFixed(1)}%`;
-        document.getElementById('lpValISS').innerText = formatBRL(totalISS);
-        
-        document.getElementById('lpBaseIRPJ').innerText = "Base: " + formatBRL(baseIRPJ) + (irpjAdicional > 0 ? " (+ Adic.)" : "");
-        document.getElementById('lpValIRPJ').innerText = formatBRL(totalIRPJ);
-        
-        document.getElementById('lpBaseCSLL').innerText = "Base: " + formatBRL(baseCSLL) + " x 9%";
-        document.getElementById('lpValCSLL').innerText = formatBRL(totalCSLL);
-        
-        document.getElementById('lpBaseICMS').innerText = "Déb: " + formatBRL(icmsDebito) + " − Créd: " + formatBRL(icmsCredito);
-        document.getElementById('lpValICMS').innerText = formatBRL(icmsLiquido);
-        
-        document.getElementById('lpBaseCBS').innerText = "Déb: " + formatBRL(valDebitoCBS) + " − Créd: " + formatBRL(valCreditoCBS);
-        document.getElementById('lpValCBS').innerText = formatBRL(cbsLiquido);
-        
-        document.getElementById('lpTotalFinal').innerText = formatBRL(totalLucroPresumido);
-
-        // ========================================================
-        // ANUALIZAÇÃO DA ECONOMIA & DESTAQUE DO VENCEDOR
-        // ========================================================
+        // Ordenação
         const impostos = [
-            { nome: 'Simples Nacional Puro', val: impostoSimplesPuro },
-            { nome: 'Simples Híbrido', val: totalSimplesHibrido },
-            { nome: 'Lucro Presumido', val: totalLucroPresumido }
+            { id: 'rowSimplesPuro', diagId: 'diagSimplesPuro', nome: 'Simples Nacional Puro', val: impostoSimplesPuro },
+            { id: 'rowSimplesHibrido', diagId: 'diagSimplesHibrido', nome: 'Simples Híbrido', val: totalSimplesHibrido },
+            { id: 'rowLucroPresumido', diagId: 'diagLucroPresumido', nome: 'Lucro Presumido', val: totalLucroPresumido }
         ];
 
         impostos.sort((a, b) => a.val - b.val);
@@ -1038,54 +950,124 @@
         document.getElementById('economiaAnualVal').innerText = formatBRL(economiaAnual) + " / ano";
         document.getElementById('regimeVencedorTxt').innerText = "Vencedor: " + melhorRegime.nome;
 
-        const rowPuro = document.getElementById('rowSimplesPuro');
-        const rowHibrido = document.getElementById('rowSimplesHibrido');
-        const rowLP = document.getElementById('rowLucroPresumido');
+        ['rowSimplesPuro', 'rowSimplesHibrido', 'rowLucroPresumido'].forEach(id => {
+            const el = document.getElementById(id);
+            el.className = "transition hover:bg-slate-50";
+        });
+        document.getElementById('diagSimplesPuro').innerText = "Alternativa";
+        document.getElementById('diagSimplesHibrido').innerText = "Alternativa";
+        document.getElementById('diagLucroPresumido').innerText = "Alternativa";
 
-        rowPuro.className = 'text-black';
-        rowHibrido.className = 'text-black';
-        rowLP.className = 'text-black';
+        document.getElementById(melhorRegime.id).className = "row-winner";
+        document.getElementById(melhorRegime.diagId).innerText = "🏆 Mais Econômico";
 
-        if (melhorRegime.val === impostoSimplesPuro) rowPuro.className = 'row-winner';
-        else if (melhorRegime.val === totalSimplesHibrido) rowHibrido.className = 'row-winner';
-        else rowLP.className = 'row-winner';
+        // Memória Passo a Passo
+        document.getElementById('puroFaixa').innerText = (faixaIdx + 1) + "ª Faixa (Anexo " + anexoEfetivo + ")";
+        document.getElementById('puroNominal').innerText = (nom * 100).toFixed(2) + "%";
+        document.getElementById('puroDeducao').innerText = formatBRL(ded);
+        document.getElementById('puroAliqEfetiva').innerText = (aliqEfetivaSimples * 100).toFixed(2) + "%";
+        document.getElementById('puroBaseCalculo').innerText = formatBRL(fatTotalMes);
+        document.getElementById('puroTotalFinal').innerText = formatBRL(impostoSimplesPuro);
 
-        // MENSAGEM DINÂMICA DO WHATSAPP
+        document.getElementById('hibDasOriginal').innerText = formatBRL(impostoSimplesPuro);
+        document.getElementById('hibValorRetirado').innerText = "- " + formatBRL(valorDasRetirado) + ` (${(parteRetiradaPct * 100).toFixed(1)}%)`;
+        document.getElementById('hibDasMantido').innerText = formatBRL(dasSimplesMantido);
+
+        const txtRed = pReducaoCBS > 0 ? ` (-${(pReducaoCBS*100).toFixed(0)}%)` : '';
+        document.getElementById('hibBaseDebitoCBS').innerText = formatBRL(baseDebitoCBS);
+        document.getElementById('hibValDebitoCBS').innerText = formatBRL(valDebitoCBS) + ` [${(aliqEfetivaCBS*100).toFixed(2)}%${txtRed}]`;
+        document.getElementById('hibCreditoRegular').innerText = "- " + formatBRL(totalCreditoRegular);
+        document.getElementById('hibCreditoSimples').innerText = "- " + formatBRL(totalCreditoSimples) + ` (~${(aliqMediaSimp*100).toFixed(1)}%)`;
+        document.getElementById('hibSaldoCBS').innerText = formatBRL(cbsLiquido);
+        document.getElementById('hibTotalFinal').innerText = formatBRL(totalSimplesHibrido);
+
+        document.getElementById('lpValISS').innerText = formatBRL(totalISS) + ` [Fat: ${formatBRL(fatServ)}]`;
+        document.getElementById('lpValIRPJ').innerText = formatBRL(totalIRPJ) + ` [Base: ${formatBRL(baseIRPJ)}]`;
+        document.getElementById('lpValCSLL').innerText = formatBRL(totalCSLL) + ` [Base: ${formatBRL(baseCSLL)}]`;
+        document.getElementById('lpValICMS').innerText = formatBRL(icmsLiquido);
+        document.getElementById('lpValCBS').innerText = formatBRL(cbsLiquido);
+        document.getElementById('lpTotalFinal').innerText = formatBRL(totalLucroPresumido);
+
         const cnpjVal = document.getElementById('cnpjInput').value || 'Não informado';
         const msgWhats = encodeURIComponent(
             `Olá, equipe PPSE Contábil!\n\n` +
-            `Acabei de fazer uma simulação no Comparador Tributário:\n` +
+            `Realizei um diagnóstico no Comparador Tributário Oficial:\n` +
             `• CNPJ: ${cnpjVal}\n` +
             `• Faturamento Mensal: ${formatBRL(fatTotalMes)}\n` +
-            `• Melhor Cenário Apurado: ${melhorRegime.nome} (${formatBRL(melhorRegime.val)}/mês)\n` +
-            `• Economia Estimada Anual: ${formatBRL(economiaAnual)}/ano\n\n` +
-            `Gostaria de agendar uma análise com o especialista para validar meu planejamento tributário.`
+            `• Regime Vencedor: ${melhorRegime.nome} (${formatBRL(melhorRegime.val)}/mês)\n` +
+            `• Economia Anual Projetada: ${formatBRL(economiaAnual)}/ano\n` +
+            `• Perda de Crédito c/ Fornecedores do Simples: ${formatBRL(perdaMensalCredito)}/mês\n\n` +
+            `Gostaria de agendar uma reunião para validar nosso planejamento tributário para a Reforma.`
         );
         document.getElementById('btnWhatsApp').href = `https://wa.me/${WHATSAPP_NUMERO}?text=${msgWhats}`;
     }
 
-    function animarContadorFlutuante() {
-        const el = document.getElementById('contadorFlutuante');
-        const alvo = 1420;
-        let atual = 0;
-        const incremento = Math.ceil(alvo / 40);
+    const BASE_ACESSOS_MINIMA = 1420;
+    const STORAGE_KEY = "ppse_acessos_contador_total";
+    const API_COUNTER_URL = "https://api.counterapi.dev/v1/ppse_contabil_comparador/acessos/up";
 
+    function animarNumeroContador(valorFinal) {
+        const el = document.getElementById('contadorFlutuante');
+        if (!el) return;
+
+        const inicio = Math.max(0, valorFinal - 25);
+        let atual = inicio;
+        el.innerText = '+' + inicio.toLocaleString('pt-BR');
+
+        const stepTime = 30;
         const timer = setInterval(() => {
-            atual += incremento;
-            if (atual >= alvo) {
-                el.innerText = '+' + alvo.toLocaleString('pt-BR');
+            atual += 1;
+            el.innerText = '+' + atual.toLocaleString('pt-BR');
+            if (atual >= valorFinal) {
+                el.innerText = '+' + valorFinal.toLocaleString('pt-BR');
                 clearInterval(timer);
-            } else {
-                el.innerText = '+' + atual.toLocaleString('pt-BR');
             }
-        }, 30);
+        }, stepTime);
+    }
+
+    async function atualizarContadorAcessosReal() {
+        let contadorPersistido = parseInt(localStorage.getItem(STORAGE_KEY), 10);
+        if (isNaN(contadorPersistido) || contadorPersistido < BASE_ACESSOS_MINIMA) {
+            contadorPersistido = BASE_ACESSOS_MINIMA;
+        }
+
+        contadorPersistido += 1;
+        localStorage.setItem(STORAGE_KEY, contadorPersistido);
+
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2500);
+
+            const response = await fetch(API_COUNTER_URL, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data && typeof data.count === 'number') {
+                    const totalSincronizado = BASE_ACESSOS_MINIMA + data.count;
+                    if (totalSincronizado > contadorPersistido) {
+                        contadorPersistido = totalSincronizado;
+                        localStorage.setItem(STORAGE_KEY, contadorPersistido);
+                    }
+                }
+            }
+        } catch (err) {}
+
+        animarNumeroContador(contadorPersistido);
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+        const hoje = new Date();
+        const dataFormatada = hoje.toLocaleDateString('pt-BR');
+        const elData = document.getElementById('printDataEmissao');
+        if (elData) elData.innerText = dataFormatada;
+
         aplicarConfiguracoesDoCNAE('6920601');
-        animarContadorFlutuante();
+        atualizarContadorAcessosReal();
     });
 </script>
 
 </body>
 </html>
+EOF
+npx surge .
